@@ -22,13 +22,18 @@ def boot():
         hash_local = hexlify(uhashlib.sha256(open('hello_ota.py').read()).digest())
         r = urequests.get("https://raw.githubusercontent.com/rrbotlab/hello-ota/refs/heads/main/hello_ota.py") #?status=up&msg=OK&ping=1")
         # r = urequests.get("https://www.google.com") #?status=up&msg=OK&ping=1")
-        print('r.response: \t', r.status_code)
-        hash_remote = hexlify(uhashlib.sha256(r.content).digest())
-        print('hash_local\t', hash_local)
-        print('hash_remote\t', hash_remote)
-        # with open('temp', "a") as fp:
-        #     fp.write(r.content)
-        r.close()
+        print('\nr.status_code: \t', r.status_code)
+        if r.status_code == 200:
+            hash_remote = hexlify(uhashlib.sha256(r.content).digest())
+            print('hash_local\t', hash_local)
+            print('hash_remote\t', hash_remote)
+            if hash_remote != hash_local:
+                print('updating...')
+                with open('hello_ota.py', "w") as fp:
+                    fp.write(r.content)
+            else:
+                print('updated')
+            r.close()
         gc.collect()
 
     except Exception as ex:
