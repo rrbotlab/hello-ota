@@ -1,5 +1,5 @@
-__version__ = 'ota update first attempt'
-print('main -> hello_ota.py')
-print('hash tests')
-print('ota update first attempt')
-
+print('\n\n\n')
+print('###############')
+print('# OTA Testing #')
+print('# Build 77425 #')
+print('###############')

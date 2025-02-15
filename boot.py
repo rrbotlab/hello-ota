@@ -1,44 +1,23 @@
-# boot ota
-# This file is executed on every boot (including wake-boot from deepsleep)
-# import esp
-# esp.osdebug(None)
-import uos, machine
-# uos.dupterm(None, 1) # disable REPL on UART(0)
 import gc
-# import webrepl
-# webrepl.start()
-# import mrequests as requests
-import urequests
-import uhashlib
-from ubinascii import hexlify
+import machine
+import network
 
-gc.collect()
+def main():
+    """Main function. Runs after board boot, before main.py
+    Connects to Wi-Fi and checks for latest OTA version.
+    """
 
-# https://raw.githubusercontent.com/rrbotlab/hello-ota/refs/heads/main/hello_ota.py
+    gc.collect()
+    gc.enable()
 
-def boot():
-    try:
-        gc.collect()
-        hash_local = hexlify(uhashlib.sha256(open('hello_ota.py').read()).digest())
-        r = urequests.get("https://raw.githubusercontent.com/rrbotlab/hello-ota/refs/heads/main/hello_ota.py") #?status=up&msg=OK&ping=1")
-        # r = urequests.get("https://www.google.com") #?status=up&msg=OK&ping=1")
-        print('\nr.status_code: \t', r.status_code)
-        if r.status_code == 200:
-            hash_remote = hexlify(uhashlib.sha256(r.content).digest())
-            print('hash_local\t', hash_local)
-            print('hash_remote\t', hash_remote)
-            if hash_remote != hash_local:
-                print('updating...')
-                with open('hello_ota.py', "w") as fp:
-                    fp.write(r.content)
-            else:
-                print('updated')
-            r.close()
-        gc.collect()
+    import senko
+    OTA = senko.Senko(branch='main', url='https://raw.githubusercontent.com/rrbotlab/hello-ota/main', user="rrbotlab", repo="hello-ota", working_dir="", files=["hello_ota.py"])
 
-    except Exception as ex:
-        print("boot error:", str(ex))
+    print('\n\n\nChecking for updates...')
+    if OTA.update():
+        print("Updated to the latest version! Rebooting...")
+        machine.reset()
 
 
-if __name__ == '__main__':
-    boot()
+if __name__ == "__main__":
+    main()
