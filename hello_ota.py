@@ -1,5 +1,5 @@
 print('\n\n\n')
 print('###############')
 print('# OTA Testing #')
-print('# Build 77425 #')
+print('# \o/     \o/ #')
 print('###############')
